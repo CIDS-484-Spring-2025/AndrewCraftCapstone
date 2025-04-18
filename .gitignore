@@ -1,0 +1,16 @@
+/target/
+
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*.bak
+*.tmp
+*.log
+
+.DS_Store
+Thumbs.db
+
+/.env
+/tests/output/
