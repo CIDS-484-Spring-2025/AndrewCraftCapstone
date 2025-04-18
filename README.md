@@ -25,5 +25,9 @@ Then can be compiled into a GIF formate using the `gifski` crate with this CLI p
   - `image` - to render PNG files
   - `gifski` - to create GIFs from image frames
 
-# **Running This Code & Installing Rust**
+# **Running This Code** 
+To run, install Rust via [Rustup](https://rustup.rs/), then in Command Line, change your directory to that of the folder containing the src folder and cargo.toml, then run the following two commands:
+
+`cargo build`
+</br>`cargo run`
   
