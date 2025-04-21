@@ -1,11 +1,10 @@
 /// Andrew Craft
 /// CIDS 484-01
-
 mod render;
 use render::draw_maze_to_png;
 
-use rand::seq::SliceRandom;
 use rand::rng;
+use rand::seq::SliceRandom;
 use rand::Rng;
 const WIDTH: usize = 20;
 const HEIGHT: usize = 20;
@@ -102,7 +101,6 @@ fn print_maze(grid: &Vec<Cell>) {
                 }
             }
             print!("{}", symbol);
-            
 
             // Right wall
             if cell.walls[1] {
@@ -124,4 +122,3 @@ fn main() {
     draw_maze_to_png(&grid, 0); // Starts at zero for numbering each subsequent PNG for ease of use with gifski
     println!("Maze image saved to maze.png")
 }
-

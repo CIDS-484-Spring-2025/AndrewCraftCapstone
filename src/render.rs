@@ -1,10 +1,10 @@
+use crate::{index, Cell, END_POS, HEIGHT, START_POS, WIDTH};
 /// Andrew Craft
 /// CIDS 484-01
 
 ///This file draws the maze data (not the ASCII art) generated from main.rs into an image with the help of the image crate
 use image::{Rgb, RgbImage};
 use std::fs;
-use crate::{Cell, WIDTH, HEIGHT, index, START_POS, END_POS};
 
 const CELL_SIZE: u32 = 20;
 const WALL_THICKNESS: u32 = 2;
@@ -87,7 +87,11 @@ fn draw_maze_to_png_with_filename(grid: &Vec<Cell>, filename: &str) {
 
         for dy in 0..CELL_SIZE {
             for dx in 0..CELL_SIZE {
-                img.put_pixel(sx as u32 * CELL_SIZE + dx, sy as u32 * CELL_SIZE + dy, green);
+                img.put_pixel(
+                    sx as u32 * CELL_SIZE + dx,
+                    sy as u32 * CELL_SIZE + dy,
+                    green,
+                );
                 img.put_pixel(ex as u32 * CELL_SIZE + dx, ey as u32 * CELL_SIZE + dy, red);
             }
         }
