@@ -30,4 +30,8 @@ To run, install Rust via [Rustup](https://rustup.rs/), then in Command Line, cha
 
 `cargo build`
 </br>`cargo run`
+
+# **Video**
+[![Milestone 3](https://img.youtube.com/vi/QOK_FvByKR8/0.jpg)](https://youtu.be/QOK_FvByKR8)
+
   
