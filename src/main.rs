@@ -1,5 +1,8 @@
-/// Andrew Craft
-/// CIDS 484-01
+// Andrew Craft
+// CIDS 484-01
+
+//mod agent;
+// agent::{train_agent, Agent};
 mod render;
 use render::draw_maze_to_png;
 
