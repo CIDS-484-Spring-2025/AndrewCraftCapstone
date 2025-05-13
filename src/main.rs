@@ -1,13 +1,14 @@
 // Andrew Craft
 // CIDS 484-01
 
-//mod agent;
-// agent::{train_agent, Agent};
+mod agent;
+use agent::{train_agent, Agent};
+use std::process::Command;
 mod render;
 use render::draw_maze_to_png;
 
 use rand::rng;
-use rand::seq::SliceRandom;
+use rand::prelude::SliceRandom;
 use rand::Rng;
 const WIDTH: usize = 20;
 const HEIGHT: usize = 20;
@@ -39,7 +40,7 @@ fn index(x: isize, y: isize) -> Option<usize> {
 }
 
 fn generate_maze(grid: &mut Vec<Cell>, x: isize, y: isize) {
-    let directions = [(0, -1, 0, 2), (1, 0, 1, 3), (0, 1, 2, 0), (-1, 0, 3, 1)];
+    let directions = [(0, -1, 0, 2), (1, 0, 1, 3), (0, 1, 2, 0), (-1, 0, 3, 1)]; 
     let mut rng = rng();
     let mut shuffled = directions.to_vec();
     shuffled.shuffle(&mut rng);
@@ -122,6 +123,59 @@ fn main() {
     set_start_and_end(); // pick random S and E
     print_maze(&grid);
 
-    draw_maze_to_png(&grid, 0); // Starts at zero for numbering each subsequent PNG for ease of use with gifski
-    println!("Maze image saved to maze.png")
+    draw_maze_to_png(&grid, 0, None); // Starts at zero for numbering each subsequent PNG for ease of use with gifski
+    println!("Maze image saved to maze.png");
+    
+    let trained_agent;
+    let path;
+    
+    unsafe {
+        train_agent(
+            &grid,
+            WIDTH,
+            HEIGHT,
+            START_POS,
+            END_POS,
+            2000);
+
+        trained_agent = Agent::new(START_POS.0, START_POS.1);
+
+        
+        path = trained_agent.get_optimal_path(
+            START_POS,
+            END_POS,
+            &grid,
+            WIDTH,
+            HEIGHT,
+        );
+    }
+    
+
+
+
+    // Section of doing the drawing
+    let _ = std::fs::remove_dir_all("frames");
+    let _ = std::fs::create_dir("frames");
+    
+    // Draw each step in the path as a frame
+    for (i, _step) in path.iter().enumerate() {
+        let partial_path = &path[..=i]; // cumulative path up to this step
+        draw_maze_to_png(&grid, i + 1, Some(partial_path));
+    }
+
+    // Combine PNGs into GIF using gifski. I don't entirely comprehend what is going on here :)
+    let status = Command::new("gifski")
+        .args([
+            "-o", "agent_path.gif",
+            "-r", "10", // 10 FPS
+        ])
+        .arg("frames/frame_*.png")
+        .status()
+        .expect("Failed to run gifski");
+
+    if status.success() {
+        println!("GIF successfully created: agent_path.gif");
+    } else {
+        println!("GIF creation failed.");
+    }
 }

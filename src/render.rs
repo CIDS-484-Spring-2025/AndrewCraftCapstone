@@ -12,17 +12,17 @@ const CELL_SIZE: u32 = 20;
 const WALL_THICKNESS: u32 = 2;
 
 /// Public function to be called from main, automatically names frame with zero-padded number.
-pub fn draw_maze_to_png(grid: &Vec<Cell>, frame_num: usize) {
+pub fn draw_maze_to_png(grid: &Vec<Cell>, frame_num: usize, path: Option<&[(usize, usize)]>) {
     // Make sure frames directory exists
     fs::create_dir_all("frames").expect("Failed to create frames directory");
 
     // Format the filename with zero-padded frame number
     let filename = format!("frames/frame_{:03}.png", frame_num);
-    draw_maze_to_png_with_filename(grid, &filename);
+    draw_maze_to_png_with_filename(grid, &filename, path);
 }
 
 /// Internal function that does the actual drawing and saving
-fn draw_maze_to_png_with_filename(grid: &Vec<Cell>, filename: &str) {
+fn draw_maze_to_png_with_filename(grid: &Vec<Cell>, filename: &str, path: Option<&[(usize, usize)]>) {
     let img_width = WIDTH as u32 * CELL_SIZE + WALL_THICKNESS;
     let img_height = HEIGHT as u32 * CELL_SIZE + WALL_THICKNESS;
     let mut img = RgbImage::new(img_width, img_height);
@@ -31,6 +31,7 @@ fn draw_maze_to_png_with_filename(grid: &Vec<Cell>, filename: &str) {
     let black = Rgb([0, 0, 0]);
     let red = Rgb([255, 0, 0]);
     let green = Rgb([0, 255, 0]);
+    let blue = Rgb([0, 0, 255]);
 
     // Fill background white
     for pixel in img.pixels_mut() {
@@ -82,6 +83,31 @@ fn draw_maze_to_png_with_filename(grid: &Vec<Cell>, filename: &str) {
         }
     }
 
+    // Draw path if provided
+    if let Some(path) = path {
+        for &(x, y) in path {
+            let px = x as u32 * CELL_SIZE;
+            let py = y as u32 * CELL_SIZE;
+
+            // Drawing the agent path as a blue circle
+            let radius = CELL_SIZE as i32 / 3;
+            let center_x = px as i32 + CELL_SIZE as i32 / 2;
+            let center_y = py as i32 + CELL_SIZE as i32 / 2;
+
+            for dy in -radius..=radius {
+                for dx in -radius..=radius {
+                    if dx * dx + dy * dy <= radius * radius {
+                        let x = center_x + dx;
+                        let y = center_y + dy;
+                        if x >= 0 && y >= 0 && (x as u32) < img.width() && (y as u32) < img.height() {
+                            img.put_pixel(x as u32, y as u32, blue);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     // Draw start (green) and end (red)
     unsafe {
         let (sx, sy) = START_POS;
@@ -96,7 +122,7 @@ fn draw_maze_to_png_with_filename(grid: &Vec<Cell>, filename: &str) {
                 );
                 img.put_pixel(
                     ex as u32 * CELL_SIZE + dx,
-                    ey as u32 * CELL_SIZE + dy,
+                    ey as u32 * CELL_SIZE + dy, 
                     red);
             }
         }
@@ -104,3 +130,5 @@ fn draw_maze_to_png_with_filename(grid: &Vec<Cell>, filename: &str) {
 
     img.save(filename).expect("Failed to save image");
 }
+
+
